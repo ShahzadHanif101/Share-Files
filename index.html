@@ -1440,6 +1440,43 @@
                     </div>
                   </div>
                 </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="report-opening-credit">Opening Credit</label>
+                    <div class="input-with-icon">
+                      <span class="input-icon">
+                        <i class="fas fa-wallet"></i>
+                      </span>
+                      <input
+                        type="number"
+                        id="report-opening-credit"
+                        min="0"
+                        step="0.01"
+                        inputmode="decimal"
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="report-reimbursement">Reimbursement</label>
+                    <div class="input-with-icon">
+                      <span class="input-icon">
+                        <i class="fas fa-hand-holding-usd"></i>
+                      </span>
+                      <input
+                        type="number"
+                        id="report-reimbursement"
+                        min="0"
+                        step="0.01"
+                        inputmode="decimal"
+                        placeholder="0.00"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <br />
                 <br />
                 <button
                   type="button"
@@ -2044,6 +2081,12 @@
 
         var reportFromInput = document.getElementById("report-from");
         var reportToInput = document.getElementById("report-to");
+        var reportOpeningCreditInput = document.getElementById(
+          "report-opening-credit",
+        );
+        var reportReimbursementInput = document.getElementById(
+          "report-reimbursement",
+        );
         var generateReportBtn = document.getElementById("generate-report-btn");
         var reportPreview = document.getElementById("report-preview");
         var downloadPdfBtn = document.getElementById("download-pdf-btn");
@@ -2573,7 +2616,7 @@
           reportToInput.value = App.today();
         }
 
-        generateReportBtn.addEventListener("click", function () {
+        ggenerateReportBtn.addEventListener("click", function () {
           var from = reportFromInput.value;
           var to = reportToInput.value;
 
@@ -2581,45 +2624,89 @@
             showErrorMessage("Please select both a from and to date");
             return;
           }
+
           if (new Date(from) > new Date(to)) {
             showErrorMessage('The "From" date must be before the "To" date');
             return;
           }
 
+          var openingCredit = parseFloat(reportOpeningCreditInput.value) || 0;
+          var reimbursement = parseFloat(reportReimbursementInput.value) || 0;
+
           var filtered = transactions.filter(function (t) {
             return t.date >= from && t.date <= to;
           });
+
           filtered.sort(function (a, b) {
             return new Date(a.date) - new Date(b.date);
           });
 
-          var totalCredit = filtered
+          /*
+           * Virtual report-only rows.
+           * These are NOT saved to the Expenses sheet.
+           */
+          var virtualRows = [];
+
+          if (openingCredit > 0) {
+            virtualRows.push({
+              date: from,
+              description: "Previous Balance",
+              notes: "-",
+              type: "income",
+              amount: openingCredit,
+            });
+          }
+
+          if (reimbursement > 0) {
+            virtualRows.push({
+              date: from,
+              description: "Previous Reimbursement",
+              notes: "-",
+              type: "expense",
+              amount: reimbursement,
+            });
+          }
+
+          /*
+           * Virtual rows appear first, followed by actual transactions.
+           */
+          var reportRows = virtualRows.concat(filtered);
+
+          var totalCredit = reportRows
             .filter(function (t) {
               return t.type === "income";
             })
             .reduce(function (acc, t) {
-              return acc + t.amount;
+              return acc + Number(t.amount || 0);
             }, 0);
-          var totalExpense = filtered
+
+          var totalExpense = reportRows
             .filter(function (t) {
               return t.type === "expense";
             })
             .reduce(function (acc, t) {
-              return acc + t.amount;
+              return acc + Number(t.amount || 0);
             }, 0);
 
           reportData = {
             from: from,
             to: to,
-            rows: filtered,
+            openingCredit: openingCredit,
+            reimbursement: reimbursement,
+            rows: reportRows,
             totalCredit: totalCredit,
             totalExpense: totalExpense,
             balance: totalCredit - totalExpense,
           };
 
           renderReportPreview();
+
           reportPreview.classList.add("visible");
-          reportPreview.scrollIntoView({ behavior: "smooth", block: "start" });
+
+          reportPreview.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
         });
 
         function renderReportPreview() {
