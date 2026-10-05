@@ -1,0 +1,439 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="/shim.js"></script>
+
+    <base target="_top" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+
+    <title>Finance Tracker — Login</title>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100%;
+      }
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+
+        background: #f5f7fb;
+        color: #1f2937;
+      }
+
+      .login-wrapper {
+        width: 100%;
+        max-width: 390px;
+      }
+
+      .login-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        padding: 32px 26px 28px;
+
+        box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+      }
+
+      .logo {
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 18px;
+
+        border-radius: 18px;
+        background: #2563eb;
+        color: #ffffff;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        font-size: 28px;
+        font-weight: 700;
+
+        box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+      }
+
+      h1 {
+        margin: 0;
+        text-align: center;
+
+        font-size: 25px;
+        line-height: 1.25;
+        font-weight: 700;
+
+        color: #111827;
+      }
+
+      .subtitle {
+        margin: 8px 0 28px;
+
+        text-align: center;
+        color: #6b7280;
+
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .field {
+        margin-bottom: 16px;
+      }
+
+      .field-label {
+        display: block;
+        margin-bottom: 8px;
+
+        font-size: 14px;
+        font-weight: 600;
+
+        color: #374151;
+      }
+
+      .password-wrapper {
+        position: relative;
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        height: 50px;
+
+        padding: 0 15px;
+
+        border: 1px solid #d1d5db;
+        border-radius: 12px;
+
+        outline: none;
+
+        background: #ffffff;
+        color: #111827;
+
+        font-size: 16px;
+
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+
+      .password-wrapper input {
+        padding-right: 48px;
+      }
+
+      input:focus {
+        border-color: #2563eb;
+
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+      }
+
+      .toggle-password {
+        position: absolute;
+
+        right: 0;
+        top: 0;
+
+        width: 48px;
+        height: 50px;
+
+        border: 0;
+        background: transparent;
+
+        color: #6b7280;
+        cursor: pointer;
+
+        font-size: 18px;
+      }
+
+      .login-button {
+        width: 100%;
+        height: 50px;
+
+        margin-top: 4px;
+
+        border: 0;
+        border-radius: 12px;
+
+        background: #2563eb;
+        color: #ffffff;
+
+        font-size: 16px;
+        font-weight: 600;
+
+        cursor: pointer;
+
+        transition:
+          background 0.2s,
+          transform 0.1s;
+      }
+
+      .login-button:hover {
+        background: #1d4ed8;
+      }
+
+      .login-button:active {
+        transform: scale(0.99);
+      }
+
+      .login-button:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+      }
+
+      .error-message {
+        display: none;
+
+        margin-top: 14px;
+        padding: 11px 13px;
+
+        border-radius: 10px;
+
+        background: #fef2f2;
+        color: #b91c1c;
+
+        font-size: 13px;
+        line-height: 1.4;
+
+        text-align: center;
+      }
+
+      .loading {
+        display: none;
+        margin-right: 7px;
+      }
+
+      .footer {
+        margin-top: 22px;
+
+        text-align: center;
+
+        color: #9ca3af;
+        font-size: 12px;
+      }
+
+      @media (max-width: 480px) {
+        body {
+          padding: 15px;
+        }
+
+        .login-card {
+          padding: 28px 22px 24px;
+          border-radius: 18px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="login-wrapper">
+      <div class="login-card">
+        <div class="logo">$</div>
+
+        <h1>Finance Tracker</h1>
+
+        <div class="subtitle">Enter your username and password to continue</div>
+
+        <form id="loginForm">
+          <!-- USERNAME -->
+
+          <div class="field">
+            <label class="field-label" for="username"> Username </label>
+
+            <input
+              id="username"
+              type="text"
+              autocomplete="username"
+              placeholder="Enter username"
+              required
+            />
+          </div>
+
+          <!-- PASSWORD -->
+
+          <div class="field">
+            <label class="field-label" for="password"> Password </label>
+
+            <div class="password-wrapper">
+              <input
+                id="password"
+                type="password"
+                autocomplete="current-password"
+                placeholder="Enter password"
+                required
+              />
+
+              <button
+                type="button"
+                class="toggle-password"
+                id="togglePassword"
+                aria-label="Show password"
+              >
+                👁
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="login-button" id="loginButton">
+            <span class="loading" id="loading"> ⏳ </span>
+
+            <span id="loginButtonText"> Login </span>
+          </button>
+
+          <div class="error-message" id="errorMessage"></div>
+        </form>
+      </div>
+
+      <div class="footer">Finance Tracker By Shahzad Hanif</div>
+    </div>
+
+    <script>
+      const loginForm = document.getElementById("loginForm");
+
+      const usernameInput = document.getElementById("username");
+
+      const passwordInput = document.getElementById("password");
+
+      const loginButton = document.getElementById("loginButton");
+
+      const loginButtonText = document.getElementById("loginButtonText");
+
+      const loading = document.getElementById("loading");
+
+      const errorMessage = document.getElementById("errorMessage");
+
+      const togglePassword = document.getElementById("togglePassword");
+
+      // SHOW / HIDE PASSWORD
+
+      togglePassword.addEventListener("click", function () {
+        const isPassword = passwordInput.type === "password";
+
+        passwordInput.type = isPassword ? "text" : "password";
+
+        togglePassword.textContent = isPassword ? "🙈" : "👁";
+
+        togglePassword.setAttribute(
+          "aria-label",
+          isPassword ? "Hide password" : "Show password",
+        );
+      });
+
+      // LOGIN
+
+      loginForm.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        hideError();
+
+        const username = usernameInput.value.trim();
+
+        const password = passwordInput.value;
+
+        if (!username) {
+          showError("Please enter your username.");
+
+          usernameInput.focus();
+
+          return;
+        }
+
+        if (!password) {
+          showError("Please enter your password.");
+
+          passwordInput.focus();
+
+          return;
+        }
+
+        setLoading(true);
+
+        try {
+          const response = await fetch("/api/login", {
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json",
+            },
+
+            credentials: "same-origin",
+
+            body: JSON.stringify({
+              username,
+              password,
+            }),
+          });
+
+          const data = await response.json();
+
+          const result = data && data.result;
+
+          if (result && result.success) {
+            window.location.href = "/";
+
+            return;
+          }
+
+          showError(
+            result && result.message
+              ? result.message
+              : "Incorrect username or password.",
+          );
+
+          passwordInput.value = "";
+          passwordInput.focus();
+        } catch (error) {
+          showError("Unable to connect. Please try again.");
+        } finally {
+          setLoading(false);
+        }
+      });
+
+      // LOADING STATE
+
+      function setLoading(isLoading) {
+        loginButton.disabled = isLoading;
+
+        loading.style.display = isLoading ? "inline" : "none";
+
+        loginButtonText.textContent = isLoading ? "Checking..." : "Login";
+      }
+
+      // ERROR
+
+      function showError(message) {
+        errorMessage.textContent = message;
+
+        errorMessage.style.display = "block";
+      }
+
+      function hideError() {
+        errorMessage.textContent = "";
+
+        errorMessage.style.display = "none";
+      }
+
+      // INITIAL FOCUS
+
+      window.addEventListener("load", function () {
+        usernameInput.focus();
+      });
+    </script>
+  </body>
+</html>
